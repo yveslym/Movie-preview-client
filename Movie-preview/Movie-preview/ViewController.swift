@@ -9,52 +9,50 @@
 import UIKit
 
 class ViewController: UIViewController {
-
     
-
-
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        DispatchQueue.main.async(execute: {
-            /* Do UI work here */
-      
-        self.movieID.text = String(describing: self.movie.id)
-        self.movieTitle.text = self.movie.title
-        self.originTitle.text = self.movie.originalTitle
-        self.overview.text = self.movie.overview
-        self.releaseDate.text = self.movie.releaseDate
-        self.vote.text = String(describing: self.movie.voteAverage)
-            
-            if self.movie.imageBaseLink != nil{
-            let url = URL(string: self.movie.imageBaseLink!)
-            if url != nil {
-             let data = try? Data(contentsOf: url!)
-            
-             self.poster.image = UIImage(data: data!)
-            
-            }
-//            DispatchQueue.global().async {
-//
-//
-//            }
-            }
-       
-      })
-        }
-
-    let queue = DispatchQueue(label: " find user performing")
-
-    var movie = Movie()
-    @IBAction func search(_ sender: Any) {
-        queue.sync {
-            Network.find_movie(movieName: search.text!, completion: {movies in
-                self.movie = movies!
-                print(movies!)
-                  self.viewDidLoad()
-            })
-        }
         
     }
+    
+    
+    var movie = Movie()
+    @IBAction func search(_ sender: Any) {
+        let mysearch = self.search.text
+        //DispatchQueue.global().sync {
+            Network.find_movie(movieName: mysearch!, completion: {movies in
+                self.movie = movies!
+                print(movies!)
+                self.updateView()
+            })
+    }
+    
+            
+            func updateView(){
+                 DispatchQueue.main.sync {
+                
+                self.movieID.text = String(describing: self.movie.id)
+                self.movieTitle.text = self.movie.title
+                self.originTitle.text = self.movie.originalTitle
+                self.overview.text = self.movie.overview
+                self.releaseDate.text = self.movie.releaseDate
+                self.vote.text = String(describing: self.movie.voteAverage)
+                
+                if self.movie.imageBaseLink != nil{
+                    let url = URL(string: self.movie.imageBaseLink!)
+                    if url != nil {
+                        let data = try? Data(contentsOf: url!)
+                        self.poster.image = UIImage(data: data!)
+                    }
+                }
+                self.reloadInputViews()
+            }
+        }
+    //}
+    //}
     
     @IBOutlet weak var overview: UITextView!
     @IBOutlet weak var poster: UIImageView!
