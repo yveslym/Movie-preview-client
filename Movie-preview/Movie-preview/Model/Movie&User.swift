@@ -16,7 +16,7 @@ struct Movie: Codable{
     var releaseDate: String
     var posterPath: String
     var user: String?
-    var imageBaseLink = "https://image.tmdb.org/t/p/w500"
+    var imageBaseLink: String? = "https://image.tmdb.org/t/p/w500"
     var voteAverage: Double
    
     init() {
@@ -28,7 +28,7 @@ struct Movie: Codable{
          releaseDate = ""
          posterPath = ""
         user = ""
-         imageBaseLink = ""
+        imageBaseLink = nil
          voteAverage = 0.0
     }
    
@@ -61,7 +61,7 @@ struct Movie: Codable{
          releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
          originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
         voteAverage = (try results.decodeIfPresent(Double.self, forKey: .vote_average)!)
-         imageBaseLink = imageBaseLink+posterPath
+        imageBaseLink = imageBaseLink!+posterPath
     }
     
     func encode(to encoder: Encoder) throws {
