@@ -10,9 +10,9 @@ import Foundation
 
 
 
-var currentUser : Users
 
 
+ 
 protocol URLQueryParameterStringConvertible {
     var queryParameters: String {get}
 }
@@ -61,7 +61,6 @@ struct BasicAuth {
         return authHeaderString
     }
 }
-
 
 
 

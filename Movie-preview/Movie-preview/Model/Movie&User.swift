@@ -63,21 +63,30 @@ struct Movie: Codable{
     }
 }
 
-extension Movie{
-    static func decodeMovie ()->[Movie]{
-        if currentUser != nil{
-        //fetch movie from database
-        }
-}
+//extension Movie{
+//    static func decodeMovie ()->[Movie]{
+//        //if Users.currentUser != nil{
+//        //fetch movie from database
+//        }
+//}
 
 class Users: Codable{
-    
+    static var currentUser : Users?
     var firstName: String
     var lastName: String
     let email: String
     let password: String
     var favoriteMovie: [Movie]
     var userName: String
+    
+    init() {
+        self.firstName = ""
+        self.lastName = ""
+        self.email = ""
+        self.password = ""
+        self.favoriteMovie = []
+        self.userName = ""
+    }
     
     enum codingKeys: String,CodingKey {
         case first_name
@@ -94,12 +103,14 @@ class Users: Codable{
         self.email =  (try contenaire.decodeIfPresent(String.self, forKey: .email)!)
         self.userName =  (try contenaire.decodeIfPresent(String.self, forKey: .user_name)!)
         self.password = ""
+        self.favoriteMovie = []
         Network.fetcMovies(completion: {movie in
             self.favoriteMovie.append(movie!)
         })
     }
 }
-}
+
+
 
 struct Errors: Decodable{
     var error:String
