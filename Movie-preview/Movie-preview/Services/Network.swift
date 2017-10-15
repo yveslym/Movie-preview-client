@@ -29,11 +29,19 @@ class Network{
     let session = URLSession.shared
     let task = session.dataTask(with: request){data,response,error in
         
-        guard let data = data else {return}
+       // guard let data = data else {return}
+        
         do{
-            let mymovie = try JSONDecoder().decode(Movie.self, from: data)
-            print (mymovie.title)
-            
+            if data != nil{
+            let mymovie = try JSONDecoder().decode(Movie.self, from: data!)
+            let statusCode = (response as! HTTPURLResponse).statusCode
+           // _ = (response as? HTTPURLResponse)?.textEncodingName
+            print("URL Session Task Succeeded: HTTP \(statusCode)")
+            print (mymovie)
+            }
+            else{
+                print("no data found")
+            }
 //            print(error)
 //
 //            print(response)

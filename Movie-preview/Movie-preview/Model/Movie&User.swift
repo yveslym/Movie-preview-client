@@ -10,7 +10,7 @@ import Foundation
 
 struct Movie: Decodable{
     var title : String
-    //   var id :Int
+       var id :Int
     //    var overview: String
     //    var originalTitle: String
     //    var releaseDate: String
@@ -20,7 +20,7 @@ struct Movie: Decodable{
         
         enum Results:String,CodingKey {
             case title
-            //            case id
+                       case id
             //            case overview
             //            case originalTile = "original_title"
             //            case releaseDate = "release_date"
@@ -30,8 +30,9 @@ struct Movie: Decodable{
         
         
         let contenaire = try decoder.container(keyedBy:CodingKeys.self)
-        let results = try contenaire.nestedContainer(keyedBy: CodingKeys.Results.self, forKey: .results)
-        //        id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
+        var ContenaireResults = try contenaire.nestedUnkeyedContainer(forKey: .results)
+        let results = try ContenaireResults.nestedContainer(keyedBy: CodingKeys.Results.self)
+               id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
         title = (try results.decodeIfPresent(String.self, forKey: .title)!)
         //        overview = (try results.decodeIfPresent(String.self, forKey: .overview)!)
         //        releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
