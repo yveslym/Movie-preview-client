@@ -42,28 +42,87 @@ class Network{
     }
     task.resume()
     }
-    
+    //==>Mark
+    /// function to save movie with user email as main key
     static func save_movie(movie: Movie){
         // make movie user = to current user
+        
+        ///set network url and url request
         let urlString = "http://127.0.0.1:5000/movies"
         guard let url = URL(string: urlString) else {return}
-        
+         let authHeaderString =  BasicAuth.generateBasicAuthHeader(username: currentUser.email, password: currentUser.password)
         var request = URLRequest(url: url)
         
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "content-type")
+        request.addValue(authHeaderString, forHTTPHeaderField: "Authorization")
         
+        do{
+            let jsonBody = try JSONEncoder().encode(movie)
+            request.httpBody = jsonBody
+        }catch{}
+        
+        let session = URLSession.shared
+        let task = session.dataTask(with: request){data,response,error in
+            guard let data = data else {return}
+            do{
+                 _ = try JSONEncoder().encode(data)
+                
+                if (error == nil) {
+                    // Success
+                    let statusCode = (response as! HTTPURLResponse).statusCode
+                    _ = (response as? HTTPURLResponse)?.textEncodingName
+                    print("URL Session Task Succeeded: HTTP \(statusCode)")
+                    
+                    if statusCode == 400 || statusCode == 401{
+                        //let responseData = String(data: data!, encoding: String.Encoding.utf8)!
+                        let errorMessage = try JSONDecoder().decode(Errors.self, from: data)
+                        print (errorMessage.error)
+                    }
+                    
+                }
+                else {
+                    // Failure
+                    let statusCode = (response as! HTTPURLResponse).statusCode
+                    print (statusCode)
+                    print("URL Session Task Failed: %@", error!.localizedDescription)
+                }
+
+            }
+            catch{}
+        }
+        task.resume()
     }
     
-    struct BasicAuth {
-        static func generateBasicAuthHeader(username: String, password: String) -> String {
-            let loginString = String(format: "%@:%@", username, password)
-            let loginData: Data = loginString.data(using: String.Encoding.utf8)!
-            let base64LoginString = loginData.base64EncodedString(options: .init(rawValue: 0))
-            let authHeaderString = "Basic \(base64LoginString)"
+    //==>Mark function to fetch movies from database
+
+    static func fetcMovies(completion:@escaping(Movie?)->Void){
+        
+        let urlString = "http://127.0.0.1:5000/movies"
+        guard let url = URL(string: urlString) else {return}
+        let authHeaderString =  BasicAuth.generateBasicAuthHeader(username: currentUser.email, password: currentUser.password)
+        var request = URLRequest(url: url)
+        
+        request.httpMethod = "GET"
+        request.addValue("application/json", forHTTPHeaderField: "content-type")
+        request.addValue(authHeaderString, forHTTPHeaderField: "Authorization")
+        
+        let session = URLSession.shared
+        let task = session.dataTask(with: request){data,response,error in
             
-            return authHeaderString
+            do{
+                guard let data = data else {return}
+                let mymovie = try JSONDecoder().decode(Movie.self, from: data)
+                let statusCode = (response as! HTTPURLResponse).statusCode
+                return completion(mymovie)
+            }
+            catch{}
         }
+        task.resume()
     }
 }
+
+   
 
 
 

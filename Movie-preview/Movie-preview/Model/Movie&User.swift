@@ -46,6 +46,7 @@ struct Movie: Codable{
          originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
         
         
+        
     }
     
     func encode(to encoder: Encoder) throws {
@@ -62,15 +63,55 @@ struct Movie: Codable{
     }
 }
 
-class User: Codable{
+extension Movie{
+    static func decodeMovie ()->[Movie]{
+        if currentUser != nil{
+        //fetch movie from database
+        }
+}
+
+class Users: Codable{
     
     var firstName: String
     var lastName: String
     let email: String
     let password: String
     var favoriteMovie: [Movie]
+    var userName: String
+    
+    enum codingKeys: String,CodingKey {
+        case first_name
+        case last_name
+        case email
+        case user_name
+        case Password
+    }
+    
+    required init(from decoder: Decoder)throws {
+        let contenaire = try decoder.container(keyedBy: codingKeys.self)
+        self.firstName = (try contenaire.decodeIfPresent(String.self, forKey: .first_name)!)
+        self.lastName = (try contenaire.decodeIfPresent(String.self, forKey: .last_name)!)
+        self.email =  (try contenaire.decodeIfPresent(String.self, forKey: .email)!)
+        self.userName =  (try contenaire.decodeIfPresent(String.self, forKey: .user_name)!)
+        self.password = ""
+        Network.fetcMovies(completion: {movie in
+            self.favoriteMovie.append(movie!)
+        })
+    }
+}
 }
 
+struct Errors: Decodable{
+    var error:String
+    
+    enum errorKey:String, CodingKey {
+        case error
+    }
+    init(from decoder:Decoder)throws {
+        let contenaire = try decoder.container(keyedBy: errorKey.self)
+        error = (try contenaire.decodeIfPresent(String.self, forKey: .error))!
+    }
+}
 
 
 
