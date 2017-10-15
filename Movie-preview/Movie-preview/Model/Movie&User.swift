@@ -15,8 +15,23 @@ struct Movie: Codable{
     var originalTitle: String
     var releaseDate: String
     var posterPath: String
-    var user: String
-    
+    var user: String?
+    var imageBaseLink = "https://image.tmdb.org/t/p/w500"
+    var voteAverage: Double
+   
+    init() {
+        
+         title  = ""
+         id  = 0
+         overview = ""
+         originalTitle = ""
+         releaseDate = ""
+         posterPath = ""
+        user = ""
+         imageBaseLink = ""
+         voteAverage = 0.0
+    }
+   
     
     enum CodingKeys:String,CodingKey {
         case results
@@ -29,6 +44,7 @@ struct Movie: Codable{
             case releaseDate = "release_date"
             case posterPath = "poster_path"
             case user
+            case vote_average
         }
     }
     init(from decoder: Decoder)throws {
@@ -38,15 +54,14 @@ struct Movie: Codable{
          var ContenaireResults = try contenaire.nestedUnkeyedContainer(forKey: .results)
          let results = try ContenaireResults.nestedContainer(keyedBy: CodingKeys.Results.self)
          id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
-         user = (try results.decodeIfPresent(String.self, forKey: .user)!)
+        user = (try results.decodeIfPresent(String.self, forKey: .user))
          title = (try results.decodeIfPresent(String.self, forKey: .title)!)
          overview = (try results.decodeIfPresent(String.self, forKey: .overview)!)
           posterPath = (try results.decodeIfPresent(String.self, forKey: .posterPath)!)
          releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
          originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
-        
-        
-        
+        voteAverage = (try results.decodeIfPresent(Double.self, forKey: .vote_average)!)
+         imageBaseLink = imageBaseLink+posterPath
     }
     
     func encode(to encoder: Encoder) throws {
@@ -60,8 +75,31 @@ struct Movie: Codable{
         try results.encode(originalTitle,forKey: .originalTile)
         try results.encode(posterPath, forKey: .posterPath)
         try results.encode(user, forKey: .user)
+        try results.encode(voteAverage,forKey: .vote_average)
     }
 }
+
+//==> Mark setup the image query, geting the
+
+//struct moviePoster: Codable {
+//    var secureBaseUrl : String
+//    var posterSize: [String]
+//
+//    enum codingkeys: String,CodingKey {
+//        case poster_sizes
+//        case secure_base_url
+//    }
+//        init(from decoder: Decoder)throws{
+//            let contenaire = try decoder.container(keyedBy: codingkeys.self)
+//            secureBaseUrl = (try contenaire.decodeIfPresent(String.self, forKey: .secure_base_url)!)
+//            posterSize = (try contenaire.decodeIfPresent([String].self, forKey: .poster_sizes)!)
+//        }
+//    }
+
+
+
+
+
 
 //extension Movie{
 //    static func decodeMovie ()->[Movie]{
@@ -78,6 +116,7 @@ class Users: Codable{
     let password: String
     var favoriteMovie: [Movie]
     var userName: String
+    var userToken : String
     
     init() {
         self.firstName = ""
@@ -86,6 +125,7 @@ class Users: Codable{
         self.password = ""
         self.favoriteMovie = []
         self.userName = ""
+        self.userToken = ""
     }
     
     enum codingKeys: String,CodingKey {
@@ -94,6 +134,7 @@ class Users: Codable{
         case email
         case user_name
         case Password
+        case user_token
     }
     
     required init(from decoder: Decoder)throws {
@@ -103,6 +144,7 @@ class Users: Codable{
         self.email =  (try contenaire.decodeIfPresent(String.self, forKey: .email)!)
         self.userName =  (try contenaire.decodeIfPresent(String.self, forKey: .user_name)!)
         self.password = ""
+        self.userToken =  (try contenaire.decodeIfPresent(String.self, forKey: .user_token)!)
         self.favoriteMovie = []
         Network.fetcMovies(completion: {movie in
             self.favoriteMovie.append(movie!)

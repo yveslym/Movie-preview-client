@@ -129,7 +129,7 @@ class Network{
     
     
     ///function to parse movie from themoviedb api
-   static func find_movie(movieName:String) {
+    static func find_movie(movieName:String, completion: @escaping(Movie?)->Void) {
         
         var url = URL(string: "https://api.themoviedb.org/3/search/movie")
         let URLParams = [
@@ -155,6 +155,8 @@ class Network{
           
             print("URL Session Task Succeeded: HTTP \(statusCode)")
             print (mymovie)
+            
+            return completion(mymovie)
         }
         catch{}
     }
@@ -222,7 +224,10 @@ class Network{
     static func delete_movie(movie: Movie){
         
         let urlString = "http://127.0.0.1:5000/movies"
-        guard let url = URL(string: urlString) else {return}
+        guard var url = URL(string: urlString) else {return}
+        let urlparam = ["movie_id": String(movie.id)]
+        
+        url = url.appendingQueryParameters(urlparam)
         
         let authHeaderString =  BasicAuth.generateBasicAuthHeader(username: (Users.currentUser?.email)!, password: (Users.currentUser?.password)!)
         var request = URLRequest(url: url)
@@ -233,7 +238,7 @@ class Network{
         do{
         let jsonBody = try JSONEncoder().encode(movie)
         request.httpBody = jsonBody
-        request.addValue(String(movie.id), forHTTPHeaderField: "movie-id")
+       
         }catch{}
         
         let session = URLSession.shared
