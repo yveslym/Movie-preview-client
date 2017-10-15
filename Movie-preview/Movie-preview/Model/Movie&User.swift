@@ -15,7 +15,7 @@ struct Movie: Codable{
     var originalTitle: String
     var releaseDate: String
     var posterPath: String
-   
+    var user: String
     
     
     enum CodingKeys:String,CodingKey {
@@ -28,6 +28,7 @@ struct Movie: Codable{
             case originalTile = "original_title"
             case releaseDate = "release_date"
             case posterPath = "poster_path"
+            case user
         }
     }
     init(from decoder: Decoder)throws {
@@ -37,11 +38,14 @@ struct Movie: Codable{
          var ContenaireResults = try contenaire.nestedUnkeyedContainer(forKey: .results)
          let results = try ContenaireResults.nestedContainer(keyedBy: CodingKeys.Results.self)
          id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
+         user = (try results.decodeIfPresent(String.self, forKey: .user)!)
          title = (try results.decodeIfPresent(String.self, forKey: .title)!)
          overview = (try results.decodeIfPresent(String.self, forKey: .overview)!)
+          posterPath = (try results.decodeIfPresent(String.self, forKey: .posterPath)!)
          releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
          originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
-         posterPath = (try results.decodeIfPresent(String.self, forKey: .posterPath)!)
+        
+        
     }
     
     func encode(to encoder: Encoder) throws {
@@ -54,9 +58,18 @@ struct Movie: Codable{
         try results.encode(releaseDate,forKey: .releaseDate)
         try results.encode(originalTitle,forKey: .originalTile)
         try results.encode(posterPath, forKey: .posterPath)
+        try results.encode(user, forKey: .user)
     }
 }
 
+class User: Codable{
+    
+    var firstName: String
+    var lastName: String
+    let email: String
+    let password: String
+    var favoriteMovie: [Movie]
+}
 
 
 
