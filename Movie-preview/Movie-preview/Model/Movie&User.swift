@@ -8,34 +8,75 @@
 
 import Foundation
 
-struct Movie: Decodable{
+struct Movie: Codable{
     var title : String
-       var id :Int
-    //    var overview: String
-    //    var originalTitle: String
-    //    var releaseDate: String
+    var id :Int
+    var overview: String
+    var originalTitle: String
+    var releaseDate: String
+    var posterPath: String
+   
+    
     
     enum CodingKeys:String,CodingKey {
         case results
         
         enum Results:String,CodingKey {
             case title
-                       case id
-            //            case overview
-            //            case originalTile = "original_title"
-            //            case releaseDate = "release_date"
+            case id
+            case overview
+            case originalTile = "original_title"
+            case releaseDate = "release_date"
+            case posterPath = "poster_path"
         }
     }
     init(from decoder: Decoder)throws {
         
         
-        let contenaire = try decoder.container(keyedBy:CodingKeys.self)
-        var ContenaireResults = try contenaire.nestedUnkeyedContainer(forKey: .results)
-        let results = try ContenaireResults.nestedContainer(keyedBy: CodingKeys.Results.self)
-               id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
-        title = (try results.decodeIfPresent(String.self, forKey: .title)!)
-        //        overview = (try results.decodeIfPresent(String.self, forKey: .overview)!)
-        //        releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
-        //        originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
+         let contenaire = try decoder.container(keyedBy:CodingKeys.self)
+         var ContenaireResults = try contenaire.nestedUnkeyedContainer(forKey: .results)
+         let results = try ContenaireResults.nestedContainer(keyedBy: CodingKeys.Results.self)
+         id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
+         title = (try results.decodeIfPresent(String.self, forKey: .title)!)
+         overview = (try results.decodeIfPresent(String.self, forKey: .overview)!)
+         releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
+         originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
+         posterPath = (try results.decodeIfPresent(String.self, forKey: .posterPath)!)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var contenaire =  encoder.container(keyedBy: CodingKeys.self)
+        var contenaireResult = contenaire.nestedUnkeyedContainer(forKey: .results)
+        var results = contenaireResult.nestedContainer(keyedBy: CodingKeys.Results.self)
+        try results.encode(id, forKey: .id)
+        try results.encode(title,forKey: .title)
+        try results.encode(overview,forKey: .overview)
+        try results.encode(releaseDate,forKey: .releaseDate)
+        try results.encode(originalTitle,forKey: .originalTile)
+        try results.encode(posterPath, forKey: .posterPath)
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
