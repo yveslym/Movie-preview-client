@@ -16,44 +16,51 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if myResult != nil{
+            if myResult?.results?.count != 0 {
+                DispatchQueue.main.async {
+                    let total = self.myResult?.results?.count
+                    self.total?.text = String (total!)
+                    self.counter.text = String(self.index+1)
+                    self.movie = (self.myResult?.results![self.index])!
+                    self.movieID.text = String(describing: self.movie.id)
+                    self.movieTitle.text = self.movie.title
+                    self.originTitle.text = self.movie.originalTitle
+                    self.overview.text = self.movie.overview
+                    self.releaseDate.text = self.movie.releaseDate
+                    self.vote.text = String(describing: self.movie.voteAverage)
+                    
+                    let url = URL(string: self.movie.imageBaseLink)
+                    if url != nil {
+                        let data = try? Data(contentsOf: url!)
+                        if data != nil{
+                            self.poster.image = UIImage(data: data!)
+                        }
+                        else{
+                            self.poster.image = UIImage(named: "icons8-anti_trump")
+                        }
+                    }
+                    //  self.reloadInputViews()
+                }
+            }
+        }
     }
-    
     
     var movie = Movie()
     @IBAction func search(_ sender: Any) {
+        
         let mysearch = self.search.text
         //DispatchQueue.global().sync {
-            Network.find_movie(movieName: mysearch!, completion: {movies in
-                self.movie = movies!
-                print(movies!)
-                self.updateView()
-            })
+        Network.find_movie(movieName: mysearch!, completion: {results in
+            self.myResult = results
+            self.index = 0
+            //print(movies!)
+            self.viewDidLoad()
+        })
     }
     
-            
-            func updateView(){
-                 DispatchQueue.main.sync {
-                
-                self.movieID.text = String(describing: self.movie.id)
-                self.movieTitle.text = self.movie.title
-                self.originTitle.text = self.movie.originalTitle
-                self.overview.text = self.movie.overview
-                self.releaseDate.text = self.movie.releaseDate
-                self.vote.text = String(describing: self.movie.voteAverage)
-                
-                if self.movie.imageBaseLink != nil{
-                    let url = URL(string: self.movie.imageBaseLink!)
-                    if url != nil {
-                        let data = try? Data(contentsOf: url!)
-                        self.poster.image = UIImage(data: data!)
-                    }
-                }
-                self.reloadInputViews()
-            }
-        }
-    //}
-    //}
-    
+    var myResult: search_result?
+    var index = 0
     @IBOutlet weak var overview: UITextView!
     @IBOutlet weak var poster: UIImageView!
     @IBOutlet weak var movieTitle: UILabel!
@@ -62,6 +69,37 @@ class ViewController: UIViewController {
     @IBOutlet weak var movieID: UILabel!
     @IBOutlet weak var vote: UILabel!
     @IBOutlet weak var search: UISearchBar!
+    @IBOutlet weak var counter: UILabel!
+    @IBOutlet weak var total: UILabel!
+    
+    // function to show up the next movie
+    @IBAction func next(_ sender: Any) {
+        if index < (myResult?.results?.count)!{
+            index = index+1
+            self.viewDidLoad()
+        }
+        else{
+            index = 0
+            self.viewDidLoad()
+        }
+        
+    }
+    // function to show up the previous movie
+    @IBAction func previous(_ sender: Any) {
+        if index > 0 && index < (myResult?.results?.count)!{
+            index = index-1
+            
+            
+            self.viewDidLoad()
+        }
+        else if index == 0{
+            index = (myResult?.results?.count)! - 1
+            
+            self.viewDidLoad()
+        }
+        
+    }
+
 }
 
 extension UIImageView {

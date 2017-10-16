@@ -129,7 +129,7 @@ class Network{
     
     
     ///function to parse movie from themoviedb api
-    static func find_movie(movieName:String, completion: @escaping(Movie?)->Void) {
+    static func find_movie(movieName:String, completion: @escaping(search_result?)->Void) {
         
         var url = URL(string: "https://api.themoviedb.org/3/search/movie")
         let URLParams = [
@@ -150,7 +150,7 @@ class Network{
         
         do{
             guard let data = data else {return}
-            let mymovie = try JSONDecoder().decode(Movie.self, from: data)
+            let mymovie = try JSONDecoder().decode(search_result.self, from: data)
             let statusCode = (response as! HTTPURLResponse).statusCode
           
             print("URL Session Task Succeeded: HTTP \(statusCode)")

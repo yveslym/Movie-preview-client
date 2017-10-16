@@ -11,12 +11,12 @@ import Foundation
 struct Movie: Codable{
     var title : String
     var id :Int
-    var overview: String
+    var overview: String?
     var originalTitle: String
     var releaseDate: String
-    var posterPath: String
+    var posterPath: String?
     var user: String?
-    var imageBaseLink: String? = "https://image.tmdb.org/t/p/w500"
+    var imageBaseLink: String = "https://image.tmdb.org/t/p/w500"
     var voteAverage: Double
    
     init() {
@@ -28,13 +28,13 @@ struct Movie: Codable{
          releaseDate = ""
          posterPath = ""
         user = ""
-        imageBaseLink = nil
+        imageBaseLink = ""
          voteAverage = 0.0
     }
    
     
-    enum CodingKeys:String,CodingKey {
-        case results
+   // enum CodingKeys:String,CodingKey {
+     //   case results
         
         enum Results:String,CodingKey {
             case title
@@ -46,28 +46,38 @@ struct Movie: Codable{
             case user
             case vote_average
         }
-    }
+    ///}
     init(from decoder: Decoder)throws {
         
         
-         let contenaire = try decoder.container(keyedBy:CodingKeys.self)
-         var ContenaireResults = try contenaire.nestedUnkeyedContainer(forKey: .results)
-         let results = try ContenaireResults.nestedContainer(keyedBy: CodingKeys.Results.self)
-         id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
+         //let contenaire = try decoder.container(keyedBy:CodingKeys.self)
+         //var ContenaireResults = try contenaire.nestedUnkeyedContainer(forKey: .results)
+         //let results = try ContenaireResults.nestedContainer(keyedBy: CodingKeys.Results.self)
+        
+        let results = try decoder.container(keyedBy: Results.self)
+        id = (try results.decodeIfPresent(Int.self, forKey: .id)!)
         user = (try results.decodeIfPresent(String.self, forKey: .user))
-         title = (try results.decodeIfPresent(String.self, forKey: .title)!)
-         overview = (try results.decodeIfPresent(String.self, forKey: .overview)!)
-          posterPath = (try results.decodeIfPresent(String.self, forKey: .posterPath)!)
-         releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
-         originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
+        title = (try results.decodeIfPresent(String.self, forKey: .title)!)
+        let myoverview = try results.decodeIfPresent(String.self, forKey: .overview) ?? ""
+        let  myposterPath = try results.decodeIfPresent(String.self, forKey: .posterPath) ?? ""
+        
+        //let votes = try container.decodeIfPresent(Int.self, forKey: .votes) ?? 0
+        
+        releaseDate = (try results.decodeIfPresent(String.self, forKey: .releaseDate)!)
+        originalTitle = (try results.decodeIfPresent(String.self, forKey: .originalTile)!)
         voteAverage = (try results.decodeIfPresent(Double.self, forKey: .vote_average)!)
-        imageBaseLink = imageBaseLink!+posterPath
+        overview = myoverview
+        posterPath = myposterPath
+        imageBaseLink = imageBaseLink+posterPath!
+        
+        
     }
     
     func encode(to encoder: Encoder) throws {
-        var contenaire =  encoder.container(keyedBy: CodingKeys.self)
-        var contenaireResult = contenaire.nestedUnkeyedContainer(forKey: .results)
-        var results = contenaireResult.nestedContainer(keyedBy: CodingKeys.Results.self)
+       // var contenaire =  encoder.container(keyedBy: CodingKeys.self)
+       // var contenaireResult = contenaire.nestedUnkeyedContainer(forKey: .results)
+        //var results = contenaireResult.nestedContainer(keyedBy: CodingKeys.Results.self)
+        var results = encoder.container(keyedBy: Results.self)
         try results.encode(id, forKey: .id)
         try results.encode(title,forKey: .title)
         try results.encode(overview,forKey: .overview)
@@ -77,6 +87,10 @@ struct Movie: Codable{
         try results.encode(user, forKey: .user)
         try results.encode(voteAverage,forKey: .vote_average)
     }
+}
+
+struct search_result:Decodable {
+    var results: [Movie]?
 }
 
 //==> Mark setup the image query, geting the
