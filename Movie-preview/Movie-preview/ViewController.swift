@@ -74,7 +74,7 @@ class ViewController: UIViewController {
     
     // function to show up the next movie
     @IBAction func next(_ sender: Any) {
-        if index < (myResult?.results?.count)!{
+        if index < ((myResult?.results?.count)! - 1){
             index = index+1
             self.viewDidLoad()
         }

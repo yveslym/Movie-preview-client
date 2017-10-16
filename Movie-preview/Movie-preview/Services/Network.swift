@@ -168,6 +168,7 @@ class Network{
     static func save_movie(movie: Movie){
         // make movie user = to current user
         
+        
         ///set network url and url request
         let urlString = "http://127.0.0.1:5000/movies"
         guard let url = URL(string: urlString) else {return}
@@ -193,6 +194,52 @@ class Network{
         }
         task.resume()
     }
+    
+    //==> function to fetch movie link through youtube api
+    
+    func findVideoLink(title: String, completion:@escaping(URL?)->Void){
+        
+        //let baseURL = "https://www.youtube.com/watch?v="
+        let link = "https://www.googleapis.com/youtube/v3/search"
+        guard var url = URL(string: link) else {return}
+        
+        let searchName = title+" "+" trailer"
+        
+        // set-up url parameter
+        let urlParam = ["part":"snippet",
+                        "maxResults":"1",
+                        "order":"relevance",
+                        "q":searchName,
+                        "type":"video",
+                        "videoDefinition":"high",
+                        "videoDuration":"short",
+                        "videoEmbeddable":"true",
+                        "key":"AIzaSyB0iNNQahMNATrr1p-pxC4kre55FZJ20hg"]
+        url = url.appendingQueryParameters(urlParam)
+        
+        var request = URLRequest(url: url)
+        request.setValue("application/json", forHTTPHeaderField: "forHTTPHeaderField: Content-Type")
+        
+        
+        let session = URLSession.shared
+        let task = session.dataTask(with: request){data,response,error in
+            
+            
+            do{
+                guard let data = data else {return}
+                let movieLink = try JSONDecoder().decode(VideoLink.self, from: data)
+                let statusCode = (response as! HTTPURLResponse).statusCode
+                
+                print("URL Session Task Succeeded: HTTP \(statusCode)")
+                print (movieLink)
+                
+                //return completion(mymovie)
+            }
+            catch{}
+        }
+        task.resume()
+    }
+    
     
     //==>Mark function to fetch movies from database
 

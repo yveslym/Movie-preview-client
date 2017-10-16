@@ -93,6 +93,34 @@ struct search_result:Decodable {
     var results: [Movie]?
 }
 
+struct VideoLink:Decodable{
+    var videoId: String
+    
+    enum RootKey: String,CodingKey{
+        case items
+        
+        enum ItemsKeys: String, CodingKey {
+            case id
+            
+            enum idKeys: String,CodingKey {
+                case videoId
+            }
+        }
+        
+    }
+}
+
+
+extension VideoLink{
+    init(from decoder: Decoder)throws {
+        let contenaire = try decoder.container(keyedBy: RootKey.self)
+        var itemRoot = try contenaire.nestedUnkeyedContainer(forKey: .items)
+        let items = try itemRoot.nestedContainer(keyedBy: RootKey.ItemsKeys.self)
+        var idRoot = try items.nestedUnkeyedContainer(forKey: .id)
+        let idContenaire = try idRoot.nestedContainer(keyedBy: RootKey.ItemsKeys.idKeys.self)
+        videoId = (try idContenaire.decodeIfPresent(String.self, forKey: .videoId)!)
+    }
+}
 //==> Mark setup the image query, geting the
 
 //struct moviePoster: Codable {
