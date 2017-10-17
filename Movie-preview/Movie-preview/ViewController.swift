@@ -99,8 +99,16 @@ class ViewController: UIViewController {
         }
         
     }
-
+    
+    @IBAction func trailer(_ sender:Any){
+        
+        Network.findVideoLink(title: self.movie.originalTitle, completion: {link in
+            
+        })
+       
+    }
 }
+    
 
 extension UIImageView {
     func downloadedFrom(url: URL, contentMode mode: UIViewContentMode = .scaleAspectFit) {

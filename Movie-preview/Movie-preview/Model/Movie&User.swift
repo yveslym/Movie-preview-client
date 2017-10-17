@@ -115,8 +115,8 @@ extension VideoLink{
     init(from decoder: Decoder)throws {
         let contenaire = try decoder.container(keyedBy: RootKey.self)
         var itemRoot = try contenaire.nestedUnkeyedContainer(forKey: .items)
-        let items = try itemRoot.nestedContainer(keyedBy: RootKey.ItemsKeys.self)
-        var idRoot = try items.nestedUnkeyedContainer(forKey: .id)
+        let itemContenaire = try itemRoot.nestedContainer(keyedBy: RootKey.ItemsKeys.self)
+        var idRoot = try itemContenaire.nestedUnkeyedContainer(forKey: .id)
         let idContenaire = try idRoot.nestedContainer(keyedBy: RootKey.ItemsKeys.idKeys.self)
         videoId = (try idContenaire.decodeIfPresent(String.self, forKey: .videoId)!)
     }

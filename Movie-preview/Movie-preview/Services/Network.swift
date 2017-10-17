@@ -142,8 +142,7 @@ class Network{
         var request = URLRequest(url: url!)
         request.httpMethod = "GET"
         request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-    
-    
+        
     let session = URLSession.shared
     let task = session.dataTask(with: request){data,response,error in
         
@@ -197,7 +196,7 @@ class Network{
     
     //==> function to fetch movie link through youtube api
     
-    func findVideoLink(title: String, completion:@escaping(URL?)->Void){
+    static func findVideoLink(title: String, completion:@escaping(URL?)->Void){
         
         //let baseURL = "https://www.youtube.com/watch?v="
         let link = "https://www.googleapis.com/youtube/v3/search"
@@ -206,20 +205,35 @@ class Network{
         let searchName = title+" "+" trailer"
         
         // set-up url parameter
-        let urlParam = ["part":"snippet",
-                        "maxResults":"1",
-                        "order":"relevance",
-                        "q":searchName,
-                        "type":"video",
-                        "videoDefinition":"high",
-                        "videoDuration":"short",
-                        "videoEmbeddable":"true",
-                        "key":"AIzaSyB0iNNQahMNATrr1p-pxC4kre55FZJ20hg"]
+//        let urlParam = ["part":"snippet",
+//                        "maxResults":"1",
+//                        "order":"relevance",
+//                        "q":searchName,
+//                        "type":"video",
+//                        "videoDefinition":"high",
+//                        "videoDuration":"short",
+//                        "videoEmbeddable":"true",
+//                        "key":"AIzaSyB0iNNQahMNATrr1p-pxC4kre55FZJ20hg"]
+        
+        
+        let urlParam = [
+            "part": "snippet",
+            "maxResults": "1",
+            "order": "relevance",
+            "q": searchName,
+            "type": "video",
+            "videoDefinition": "high",
+            "videoDuration": "short",
+            "videoEmbeddable": "true",
+            "key": "AIzaSyB0iNNQahMNATrr1p-pxC4kre55FZJ20hg",
+            ]
+
         url = url.appendingQueryParameters(urlParam)
         
         var request = URLRequest(url: url)
-        request.setValue("application/json", forHTTPHeaderField: "forHTTPHeaderField: Content-Type")
+        request.httpMethod = "GET"
         
+        request.addValue("application/json", forHTTPHeaderField:  "content-type")
         
         let session = URLSession.shared
         let task = session.dataTask(with: request){data,response,error in
